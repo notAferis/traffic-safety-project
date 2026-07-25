@@ -1,0 +1,25 @@
+# VCS / editor / tooling
+.git
+.claude
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+
+# Secrets — never bake these into an image; pass at `docker run` time instead
+.env
+phone_numbers.txt
+
+# Large, not needed to just run the dashboard — bind-mount if you need them
+# inside the container (e.g. to run the benchmark scripts)
+datasets
+agentic/test_incidents
+images
+Demo.gif
+simulation-output.png
+
+# Generated docs / stray artifacts, irrelevant to the running app
+documentation.pdf
+documentation.docx
+tts_output.wav
+skills-lock.json
