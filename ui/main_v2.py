@@ -223,7 +223,7 @@ with col_control:
 
                     if len(st.session_state.feeds) > 1:
                         with st.container(key=f"feed-remove-{feed['id']}"):
-                            if st.button("🗑️ Remove Feed", key=f"feed_remove_{feed['id']}", use_container_width=True):
+                            if st.button("🗑️ Remove Feed", key=f"feed_remove_{feed['id']}", width='stretch'):
                                 if feed['video_path'] and os.path.exists(feed['video_path']):
                                     try:
                                         os.remove(feed['video_path'])
@@ -233,7 +233,7 @@ with col_control:
                                 st.rerun()
 
             if len(st.session_state.feeds) < 5:
-                if st.button("➕ Add Camera Feed", use_container_width=True):
+                if st.button("➕ Add Camera Feed", width='stretch'):
                     new_id = max([f['id'] for f in st.session_state.feeds], default=0) + 1
                     st.session_state.feeds.append({
                         "id": new_id,
@@ -334,7 +334,7 @@ with col_control:
         # tucked inside the AI Settings tab, since it's the primary action
         st.markdown('<div class="border-t border-outline-variant/30" style="margin: 4px 0 12px;"></div>', unsafe_allow_html=True)
         if not st.session_state.streaming:
-            if st.button("▶️ Start Stream", use_container_width=True, type="primary"):
+            if st.button("▶️ Start Stream", width='stretch', type="primary"):
                 valid = True
                 active_feeds = [f for f in st.session_state.feeds if f['active']]
                 if not active_feeds:
@@ -360,7 +360,7 @@ with col_control:
                     st.rerun()
         else:
             with st.container(key="stop-stream-btn"):
-                if st.button("⏹️ Stop Stream", use_container_width=True, type="secondary"):
+                if st.button("⏹️ Stop Stream", width='stretch', type="secondary"):
                     st.session_state.streaming = False
                     st.rerun()
 
@@ -661,7 +661,7 @@ if st.session_state.streaming:
 
                 # Render frame in its placeholder
                 if feed['id'] in placeholders:
-                    placeholders[feed['id']].image(frame_rgb, channels="RGB", use_container_width=True)
+                    placeholders[feed['id']].image(frame_rgb, channels="RGB", width='stretch')
 
             if not any_frame_read:
                 break

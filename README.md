@@ -33,8 +33,10 @@ A single AI detector alone is unreliable: strict enough to avoid false alarms an
 accidents; loose enough to catch them and it fires on ordinary traffic. So every flagged frame goes
 through two stages before anything is dispatched:
 
-1. **Fast, always-on detector (DETR)** — scans every video frame in real time, flags anything that
-   could plausibly be an accident. Deliberately sensitive, so it rarely misses a genuine incident.
+1. **Fast, always-on detector** ([DETR, fine-tuned for traffic accidents by Hilman Taris
+   Muttaqin](https://huggingface.co/hilmantm/detr-traffic-accident-detection)) — scans every video
+   frame in real time, flags anything that could plausibly be an accident. Deliberately sensitive,
+   so it rarely misses a genuine incident.
 2. **Careful, on-demand verifier (`qwen2.5vl:3b`, run fully locally via Ollama)** — looks at any
    flagged frame and decides whether it's *actually* an accident before an alert goes out, acting as
    a false-alarm filter.
@@ -90,11 +92,15 @@ file header for the GPU/MPS-passthrough caveat on Docker Desktop).
 -----------------------------------------
 ### Acknowledgments
 
-The project's early traffic-intersection simulation testbed (`simulation.py`/`main.py`, and the
-`Demo.gif`/`images/` assets) is built on **Mihir Gandhi**'s
-[Basic Traffic Intersection Simulation](https://github.com/mihir-m-gandhi/Basic-Traffic-Intersection-Simulation)
-(MIT licensed), used as the starting point before the project was extended into the AI detection and
-dispatch system described above.
+- The fast, first-stage accident detector is **[DETR fine-tuned for traffic accident detection by
+  Hilman Taris Muttaqin](https://huggingface.co/hilmantm/detr-traffic-accident-detection)**, used
+  here as the always-on Stage 1 gate described above — this project did not train that model,
+  only builds the verification/dispatch pipeline around it.
+- The project's early traffic-intersection simulation testbed (`simulation.py`/`main.py`, and the
+  `Demo.gif`/`images/` assets) is built on **Mihir Gandhi**'s
+  [Basic Traffic Intersection Simulation](https://github.com/mihir-m-gandhi/Basic-Traffic-Intersection-Simulation)
+  (MIT licensed), used as the starting point before the project was extended into the AI detection
+  and dispatch system described above.
 
 -----------------------------------------
 ### License
