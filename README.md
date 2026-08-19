@@ -51,7 +51,7 @@ connection at any stage, matching the real deployment constraint in the environm
 to serve. Both AI models already run entirely on local hardware; SMS/call dispatch can route
 through a repurposed Android phone acting as its own gateway over an ordinary SIM (via Termux), with
 an internet-based option (mnotify) also available as a more feature-complete alternative. See
-[`report.md`](./report.md) §3 for the full offline/online mode breakdown, including the one
+[`docs/supervisor_report.md`](./docs/supervisor_report.md) §3 for the full offline/online mode breakdown, including the one
 remaining gap (a fully offline *spoken* voice alert, still in progress).
 
 ### Rigorously Evaluated
@@ -59,7 +59,7 @@ remaining gap (a fully offline *spoken* voice alert, still in progress).
 Detection and verification accuracy is benchmarked against a hand-labelled 54-frame test set, not
 assumed to work — including a direct comparison of the detector alone vs. the full two-stage hybrid,
 and a head-to-head comparison of candidate offline models against a cloud baseline. Full numbers and
-methodology in [`results.md`](./results.md) and [`report.md`](./report.md) §4.
+methodology in [`docs/llm_comparison_results.md`](./docs/llm_comparison_results.md) and [`docs/supervisor_report.md`](./docs/supervisor_report.md) §4.
 
 -----------------------------------------
 ### Getting Started
@@ -83,11 +83,12 @@ file header for the GPU/MPS-passthrough caveat on Docker Desktop).
 
 | Doc | Contents |
 |---|---|
+| [`docs/dissertation_complete.md`](./docs/dissertation_complete.md) | **Complete Project Dissertation & Final Documentation Report (Chapters 1–5, UMLs, Benchmarks)** |
 | [`USAGE.md`](./USAGE.md) | Full setup and run instructions, including the offline Termux SMS/call gateway |
-| [`report.md`](./report.md) | Project report — design rationale, offline/online modes, evaluation |
-| [`results.md`](./results.md) | Full benchmark results and methodology |
-| [`documentation.md`](./documentation.md) | Chapter-by-chapter final-year-report guide |
-| [`PROGRESS.md`](./PROGRESS.md) | Running change log of the pipeline's development |
+| [`docs/supervisor_report.md`](./docs/supervisor_report.md) | Project supervisor report — design rationale, offline/online modes, evaluation |
+| [`docs/llm_comparison_results.md`](./docs/llm_comparison_results.md) | Full benchmark results and methodology |
+| [`docs/dissertation_guide.md`](./docs/dissertation_guide.md) | Chapter-by-chapter final-year-report guide and shot list |
+| [`docs/PROGRESS.md`](./docs/PROGRESS.md) | Running change log of the pipeline's development |
 
 -----------------------------------------
 ### Acknowledgments

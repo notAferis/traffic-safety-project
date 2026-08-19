@@ -1,6 +1,6 @@
 # Running the Project
 
-This covers the AI traffic-incident detection dashboard (`ui/main_v2.py`) — live camera/video feeds,
+This covers the AI traffic-incident detection dashboard (`ui/main.py`) — live camera/video feeds,
 DETR accident detection, and automatic SMS/voice incident dispatch.
 
 ## Prerequisites
@@ -52,7 +52,7 @@ detected incident:
 ## 4. Run the dashboard
 
 Launching is controlled along two independent dimensions — **compute** (GPU vs CPU) and
-**dispatch mode** (online vs offline) — all of which just launch `streamlit run ui/main_v2.py`
+**dispatch mode** (online vs offline) — all of which just launch `streamlit run ui/main.py`
 underneath with different environment variables set.
 
 ### 4a. Dispatch mode — online vs offline

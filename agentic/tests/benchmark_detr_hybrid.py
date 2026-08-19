@@ -5,7 +5,7 @@ Compares two accident-detection approaches against the full calibration set
 (agentic/test_incidents/calibration/, ground truth = neg_*/pos_* filename prefix):
 
   1. DETR-only   — hilmantm/detr-traffic-accident-detection, thresholded exactly like
-                    the dashboard (ui/main_v2.py): any box whose label contains
+                    the dashboard (ui/main.py): any box whose label contains
                     "accident"/"collision"/"crash"/"incident" with score >= 0.85.
   2. DETR + LLM   — the same DETR gate, but every DETR-positive frame is then passed to
      hybrid          the qwen2.5vl:3b structured-output verifier (agentic/agents.py's
@@ -52,7 +52,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 CALIB_DIR = Path(__file__).parent.parent / "test_incidents" / "calibration"
 RESULTS_DIR = Path(__file__).parent.parent / "test_results"
 
-ACCIDENT_LABEL_KEYWORDS = ["accident", "collision", "crash", "incident"]  # matches ui/main_v2.py
+ACCIDENT_LABEL_KEYWORDS = ["accident", "collision", "crash", "incident"]  # matches ui/main.py
 LLM_TIMEOUT_S = 300  # same per-call budget used in prior model-comparison benchmarks
 
 

@@ -104,21 +104,23 @@ def parse_phone_numbers(raw: str) -> list[str]:
 
 
 def trigger_agent_dispatch(
-    feed_name, location_info, confidence_val, image_base64_data, contacts, verification_threshold, global_logs
+    feed_name, location_info, confidence_val, image_base64_data, contacts, verification_threshold, global_logs, verifier_model="qwen"
 ):
     """
-    Runs in a background thread (see main_v2.py) — verifies the flagged frame via
+    Runs in a background thread (see main.py) — verifies the flagged frame via
     the LLM and dispatches SMS/voice reports if confirmed. Appends a result entry to
     global_logs rather than touching st.session_state directly, since session_state
-    isn't safe to write from a non-main thread; main_v2.py drains global_logs into
+    isn't safe to write from a non-main thread; main.py drains global_logs into
     session_state on the main thread each render loop iteration.
     """
     try:
         from agentic.agents import run_incident_response
         alert_prompt = (
-            f"Emergency: A vehicle accident has been detected on '{feed_name}' "
-            f"located at {location_info}. The AI model confidence score is {confidence_val:.1f}%. "
-            f"Please immediately call and send SMS dispatch reports to notify emergency contacts."
+            f"Analyze the attached traffic camera feed from '{feed_name}' located at {location_info}. "
+            f"The primary object detector flagged a candidate incident with {confidence_val:.1f}% confidence.\n"
+            f"Inspect the image frame carefully for specific visual facts: vehicle types, vehicle colors, "
+            f"collision contact points, structural damage severity, scattered debris, smoke/fire, and road blockage. "
+            f"Generate a detailed, factual emergency SMS dispatch report describing what is visually observed."
         )
         agent_reply = run_incident_response(
             alert_prompt,
@@ -126,6 +128,7 @@ def trigger_agent_dispatch(
             image_base64=image_base64_data,
             contacts=contacts,
             verification_confidence_threshold=verification_threshold,
+            verifier_model=verifier_model,
         )
         t_stamp = datetime.now().strftime("%H:%M:%S")
 

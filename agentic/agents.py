@@ -28,25 +28,37 @@ except ModuleNotFoundError:
 
 load_dotenv()
 
-# ---------------------------------------------------------------------------
-# Shared LLM — runs fully offline via Ollama (no internet/API key required)
-llm = ChatOllama(
-    model="qwen2.5vl:3b",
-    temperature=0,
-    top_k=1,
-    seed=42,
-)
-
+import os
 
 # ---------------------------------------------------------------------------
-# Structured verdict schema. Field order is generation order — `observations`
-# comes first so the model reasons before committing to `is_accident`.
+# Verifier Model Factory — supports Qwen2.5-VL (Local/Ollama) & Gemini 2.5 Flash (Cloud)
 # ---------------------------------------------------------------------------
+def get_verifier(verifier_model: str = "qwen"):
+    model_choice_lower = (verifier_model or "").lower()
+    if "gemini" in model_choice_lower:
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or os.getenv("API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY / GOOGLE_API_KEY environment variable is missing in .env")
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            temperature=0,
+            google_api_key=api_key,
+        )
+        return llm.with_structured_output(IncidentVerdict)
+    else:
+        # Default: local Qwen2.5-VL via Ollama
+        llm = ChatOllama(
+            model="qwen2.5vl:3b",
+            temperature=0,
+            top_k=1,
+            seed=42,
+        )
+        return llm.with_structured_output(IncidentVerdict, method="json_schema")
 
-# method="json_schema" is pinned explicitly (rather than relying on the library default) since
-# this is a hard requirement: constrained decoding + Pydantic validation, never tool-calling
-# fallback, so unsupported models (e.g. qwen2.5vl) fail loudly instead of silently misbehaving.
-verifier = llm.with_structured_output(IncidentVerdict, method="json_schema")
+
+# Default fallback verifier instance
+verifier = get_verifier("qwen")
 
 
 # ---------------------------------------------------------------------------
@@ -58,28 +70,14 @@ def run_incident_response(
     image_base64: str = None,
     contacts: list[str] = None,
     verification_confidence_threshold: float = 0.8,
+    verifier_model: str = "qwen",
 ) -> str:
     """
     Feed an incident alert and optional image to the incident verifier, then dispatch
     SMS/voice reports directly in Python based on its structured verdict.
-
-    Args:
-        alert: Natural-language description of the incident (context for the model).
-        location: The known location of the incident, used directly for dispatch —
-            not extracted from the alert text, so a small model can't mangle it.
-        image_base64: Optional base64 encoded image string of the accident scene.
-        contacts: Recipient phone numbers, sourced from the dashboard's Contacts tab —
-            passed straight through to the dispatch functions.
-        verification_confidence_threshold: Minimum verdict.confidence_score required to
-            actually dispatch. is_accident=True alone is not enough — a low-confidence
-            "yes" is still treated as a false positive. Sourced from the dashboard's
-            Verification Confidence Threshold slider (default 0.8).
-
-    Returns:
-        A confirmation string, or a "FALSE POSITIVE: ..." string if rejected.
     """
     print("\n" + "=" * 60)
-    print("🚨  INCIDENT VERIFIER")
+    print(f"🚨  INCIDENT VERIFIER [{verifier_model}]")
     print("=" * 60)
 
     if image_base64:
@@ -92,7 +90,8 @@ def run_incident_response(
         message = HumanMessage(content=alert)
 
     try:
-        verdict: IncidentVerdict = verifier.invoke(
+        active_verifier = get_verifier(verifier_model)
+        verdict: IncidentVerdict = active_verifier.invoke(
             [SystemMessage(content=INCIDENT_RESPONSE_PROMPT), message]
         )
     except Exception as e:
@@ -117,12 +116,18 @@ def run_incident_response(
         print(answer)
         return answer
 
-    send_incident_report(location, verdict.observations, contacts=contacts)
-    send_voice_incident_report(verdict.observations, contacts=contacts)
+    report_text = (
+        verdict.sms_report.strip()
+        if (hasattr(verdict, "sms_report") and verdict.sms_report and len(verdict.sms_report.strip()) > 5)
+        else verdict.observations
+    )
+
+    send_incident_report(location, report_text, contacts=contacts)
+    send_voice_incident_report(report_text, contacts=contacts)
 
     answer = (
         "Incident reports have been sent.\n"
-        f'Report: "{verdict.observations}"'
+        f'Report: "{report_text}"'
     )
     print("\nAgent Response:\n", answer)
     return answer

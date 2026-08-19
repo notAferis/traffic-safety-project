@@ -53,7 +53,10 @@ def send_incident_report(location: str, description: str = None, contacts: List[
         print("send_incident_report: no contacts supplied; skipping dispatch.")
         return "Incident report skipped: no emergency contacts configured."
 
-    message = f"EMERGENCY: {description}"
+    if location and location.lower() not in description.lower():
+        message = f"EMERGENCY ACCIDENT ALERT [{location}]: {description}"
+    else:
+        message = f"EMERGENCY ACCIDENT ALERT: {description}"
     offline_mode = _is_offline_mode()
     print(
         f"\n--- DISPATCHING SMS ({'offline' if offline_mode else 'online'} mode) ---\n"

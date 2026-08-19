@@ -114,6 +114,10 @@ if "last_agent_alert_times" not in st.session_state:
     st.session_state.last_agent_alert_times = {}
 if "stream_start_time" not in st.session_state:
     st.session_state.stream_start_time = None
+if "verifier_model" not in st.session_state:
+    st.session_state.verifier_model = "Qwen 2.5 VL (Local / Offline)"
+if "dispatch_cooldown_minutes" not in st.session_state:
+    st.session_state.dispatch_cooldown_minutes = 5
 
 # Pre-warm detector model immediately on application load (loader lives in ui/utils.py)
 detector = load_incident_detector()
@@ -323,6 +327,37 @@ with col_control:
                 label_visibility="collapsed"
             )
             st.session_state.frame_skip = frame_skip
+
+            # Verifier Model selector — allows swapping between local Qwen2.5-VL and cloud Gemini 2.5 Flash
+            col_l, col_r = st.columns([6, 4])
+            with col_l:
+                st.markdown('<label class="text-body-sm text-on-surface-variant pt-1 block">Verifier Model</label>', unsafe_allow_html=True)
+            with col_r:
+                st.markdown(f'<span class="text-label-mono font-label-mono text-primary float-right">{"Qwen" if "Qwen" in st.session_state.verifier_model else "Gemini"}</span>', unsafe_allow_html=True)
+            verifier_choice = st.selectbox(
+                "Verifier LLM Model",
+                options=["Qwen 2.5 VL (Local / Offline)", "Gemini 2.5 Flash (Cloud / Online)"],
+                index=0 if "Qwen" in st.session_state.verifier_model else 1,
+                key="verifier_model_select",
+                label_visibility="collapsed"
+            )
+            st.session_state.verifier_model = verifier_choice
+
+            # Alert Dispatch Cooldown Slider (minutes) — prevents continuous duplicate VLM calls / SMS spam on ongoing scenes
+            col_l, col_r = st.columns([7, 3])
+            with col_l:
+                st.markdown('<label class="text-body-sm text-on-surface-variant">Dispatch Alert Cooldown (min)</label>', unsafe_allow_html=True)
+            with col_r:
+                st.markdown(f'<span class="text-label-mono font-label-mono text-primary float-right">{st.session_state.dispatch_cooldown_minutes}m</span>', unsafe_allow_html=True)
+            cooldown_mins = st.slider(
+                "Dispatch Alert Cooldown (min)",
+                min_value=1,
+                max_value=30,
+                value=st.session_state.dispatch_cooldown_minutes,
+                step=1,
+                label_visibility="collapsed"
+            )
+            st.session_state.dispatch_cooldown_minutes = cooldown_mins
 
             # Loop options (only when using Video source)
             has_video_source = any(f['source_type'] == "Video File" and f['active'] for f in st.session_state.feeds)
@@ -620,9 +655,10 @@ if st.session_state.streaming:
                         })
                         st.session_state.last_log_time = curr_t
 
-                    # Trigger agent with 60s cooldown per camera feed
+                    # Check user-configured cooldown per camera feed (prevents duplicate VLM calls & SMS spam on ongoing scenes)
+                    cooldown_s = st.session_state.dispatch_cooldown_minutes * 60.0
                     last_agent_t = st.session_state.last_agent_alert_times.get(feed['id'], 0.0)
-                    if (curr_t - last_agent_t) > 60.0:
+                    if (curr_t - last_agent_t) > cooldown_s:
                         st.session_state.last_agent_alert_times[feed['id']] = curr_t
                         
                         # Add log about triggering dispatch
@@ -652,12 +688,28 @@ if st.session_state.streaming:
                         # Dispatch thread — trigger_agent_dispatch (ui/utils.py) verifies
                         # and dispatches; it appends results to global_logs rather than
                         # touching st.session_state directly from this background thread.
+                        dispatch_verifier_model = st.session_state.verifier_model
                         dispatch_thread = threading.Thread(
                             target=trigger_agent_dispatch,
-                            args=(feed['name'], f"Intersection monitored by {feed['name']}", highest_accident_score * 100, img_base64, dispatch_contacts, dispatch_verification_threshold, global_logs)
+                            args=(feed['name'], f"Intersection monitored by {feed['name']}", highest_accident_score * 100, img_base64, dispatch_contacts, dispatch_verification_threshold, global_logs, dispatch_verifier_model)
                         )
                         dispatch_thread.daemon = True
                         dispatch_thread.start()
+                    else:
+                        # Ongoing scene under cooldown window — suppress duplicate VLM calls & SMS spam
+                        suppress_key = f"last_suppress_log_{feed['id']}"
+                        last_suppress_t = st.session_state.get(suppress_key, 0.0)
+                        if (curr_t - last_suppress_t) > 20.0:
+                            timestamp = datetime.now().strftime("%H:%M:%S")
+                            rem_seconds = max(0, int(cooldown_s - (curr_t - last_agent_t)))
+                            rem_m, rem_s = rem_seconds // 60, rem_seconds % 60
+                            st.session_state.incident_logs.insert(0, {
+                                "time": timestamp,
+                                "type": f"INCIDENT ONGOING ({feed['name']}) - Cooldown ({rem_m}m {rem_s}s remaining)",
+                                "confidence": f"{highest_accident_score * 100:.1f}%",
+                                "color_class": "text-blue-400 italic"
+                            })
+                            st.session_state[suppress_key] = curr_t
 
                 # Render frame in its placeholder
                 if feed['id'] in placeholders:

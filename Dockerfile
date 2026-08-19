@@ -1,4 +1,4 @@
-# Runs the Streamlit dashboard (ui/main_v2.py) in a container.
+# Runs the Streamlit dashboard (ui/main.py) in a container.
 #
 # IMPORTANT — no GPU/MPS acceleration inside the container: Docker Desktop on macOS
 # (Apple Silicon included) does not pass Metal through to Linux containers, so DETR
@@ -31,7 +31,6 @@ RUN uv sync --locked --no-install-project
 # Now bring in the actual application code.
 COPY ui/ ui/
 COPY agentic/ agentic/
-COPY utils/ utils/
 COPY .streamlit/ .streamlit/
 RUN uv sync --locked
 
@@ -43,4 +42,5 @@ ENV FORCE_CPU=1
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "ui/main_v2.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["streamlit", "run", "ui/main.py", "--server.address=0.0.0.0", "--server.port=8501"]
+
