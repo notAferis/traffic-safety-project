@@ -22,6 +22,8 @@ dependencies = [
     "openpyxl>=3.1.5",
     "langchain-ollama>=1.1.0",
     "pocket-tts>=2.1.0",
+    "langchain-openai>=1.6.0",
+    "datasets>=3.0.0",
 ]
 
 # CUDA (cu126) wheels only exist for Linux x86_64, so the index is restricted to that

@@ -111,3 +111,8 @@ phone_numbers.txt
 skills-lock.json
 tts_output.wav
 
+# Local Data Collection DB & Snapshots
+data/collection/
+data/models/
+*.safetensors
+

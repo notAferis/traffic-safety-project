@@ -1,65 +1,63 @@
 BODY_HTML = r"""
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
 <style>
 
     /* Custom theme styles matching tailwind-config extend */
-    .bg-background { background-color: #0a0d0f !important; }
-    .bg-background\/80 { background-color: rgba(10, 13, 15, 0.8) !important; }
-    .bg-surface-container { background-color: #171d1f !important; }
-    .bg-surface-container-low { background-color: #12171a !important; }
-    .bg-surface-container-high { background-color: #212a2d !important; }
-    .bg-surface-container-highest { background-color: #2b3538 !important; }
-    .bg-surface-variant { background-color: #2b3538 !important; }
+    .bg-background { background-color: #0d1516 !important; }
+    .bg-background\/80 { background-color: rgba(13, 21, 22, 0.8) !important; }
+    .bg-surface-container { background-color: #192122 !important; }
+    .bg-surface-container-low { background-color: #151d1e !important; }
+    .bg-surface-container-high { background-color: #242b2d !important; }
+    .bg-surface-container-highest { background-color: #2e3638 !important; }
+    .bg-surface-variant { background-color: #2e3638 !important; }
 
-    .text-primary { color: #4cd7f6 !important; }
-    .text-secondary { color: #4edea3 !important; }
-    .text-tertiary { color: #ffb95f !important; }
-    .text-error { color: #ff8a80 !important; }
+    .text-primary { color: #c3f5ff !important; }
+    .text-secondary { color: #ffcf8f !important; }
+    .text-tertiary { color: #ffe7e2 !important; }
+    .text-error { color: #ffb4ab !important; }
 
-    .bg-primary { background-color: #4cd7f6 !important; }
-    .bg-secondary { background-color: #4edea3 !important; }
+    .bg-primary { background-color: #c3f5ff !important; }
+    .bg-secondary { background-color: #ffcf8f !important; }
     .bg-error { background-color: #93000a !important; }
 
-    .border-outline-variant { border-color: #263134 !important; }
-    .outline-variant { border-color: #263134 !important; }
-    .text-on-primary { color: #003640 !important; }
-    .text-on-secondary { color: #003824 !important; }
-    .text-on-surface { color: #eef2f3 !important; }
-    .text-on-surface-variant { color: #9fadb2 !important; }
+    .border-outline-variant { border-color: #3b494c !important; }
+    .outline-variant { border-color: #3b494c !important; }
+    .text-on-primary { color: #00363d !important; }
+    .text-on-secondary { color: #452b00 !important; }
+    .text-on-surface { color: #dce4e5 !important; }
+    .text-on-surface-variant { color: #bac9cc !important; }
 
     /* Opacity and fraction mappings */
-    .bg-primary\/40 { background-color: rgba(76, 215, 246, 0.4) !important; }
-    .bg-primary\/60 { background-color: rgba(76, 215, 246, 0.6) !important; }
-    .bg-primary\/80 { background-color: rgba(76, 215, 246, 0.8) !important; }
-    .bg-primary\/30 { background-color: rgba(76, 215, 246, 0.3) !important; }
-    .bg-primary\/12 { background-color: rgba(76, 215, 246, 0.12) !important; }
-    .bg-primary\/5 { background-color: rgba(76, 215, 246, 0.05) !important; }
-    .bg-secondary\/10 { background-color: rgba(78, 222, 163, 0.1) !important; }
-    .bg-secondary\/12 { background-color: rgba(78, 222, 163, 0.12) !important; }
-    .bg-secondary\/20 { background-color: rgba(78, 222, 163, 0.2) !important; }
-    .bg-secondary\/5 { background-color: rgba(78, 222, 163, 0.05) !important; }
-    .bg-tertiary\/12 { background-color: rgba(255, 185, 95, 0.12) !important; }
-    .bg-error\/10 { background-color: rgba(255, 138, 128, 0.1) !important; }
-    .bg-error\/12 { background-color: rgba(255, 138, 128, 0.12) !important; }
-    .border-primary\/20 { border-color: rgba(76, 215, 246, 0.2) !important; }
-    .border-secondary\/20 { border-color: rgba(78, 222, 163, 0.2) !important; }
-    .border-error\/20 { border-color: rgba(255, 138, 128, 0.2) !important; }
-    .bg-surface-variant\/10 { background-color: rgba(43, 53, 56, 0.1) !important; }
-    .bg-surface-variant\/20 { background-color: rgba(43, 53, 56, 0.2) !important; }
-    .bg-surface-container-high\/50 { background-color: rgba(33, 42, 45, 0.5) !important; }
-    .bg-surface-container-high\/30 { background-color: rgba(33, 42, 45, 0.3) !important; }
-    .bg-surface-container-high\/20 { background-color: rgba(33, 42, 45, 0.2) !important; }
-    .bg-surface-container-low\/60 { background-color: rgba(18, 23, 26, 0.6) !important; }
-    .border-outline-variant\/30 { border-color: rgba(38, 49, 52, 0.6) !important; }
-    .text-on-surface-variant\/60 { color: rgba(159, 173, 178, 0.6) !important; }
-    .text-on-surface-variant\/40 { color: rgba(159, 173, 178, 0.4) !important; }
-    .shadow-primary\/20 { box-shadow: 0 4px 14px rgba(76, 215, 246, 0.2) !important; }
+    .bg-primary\/40 { background-color: rgba(195, 245, 255, 0.4) !important; }
+    .bg-primary\/60 { background-color: rgba(195, 245, 255, 0.6) !important; }
+    .bg-primary\/80 { background-color: rgba(195, 245, 255, 0.8) !important; }
+    .bg-primary\/30 { background-color: rgba(195, 245, 255, 0.3) !important; }
+    .bg-primary\/12 { background-color: rgba(195, 245, 255, 0.12) !important; }
+    .bg-primary\/5 { background-color: rgba(195, 245, 255, 0.05) !important; }
+    .bg-secondary\/10 { background-color: rgba(255, 207, 143, 0.1) !important; }
+    .bg-secondary\/12 { background-color: rgba(255, 207, 143, 0.12) !important; }
+    .bg-secondary\/20 { background-color: rgba(255, 207, 143, 0.2) !important; }
+    .bg-secondary\/5 { background-color: rgba(255, 207, 143, 0.05) !important; }
+    .bg-tertiary\/12 { background-color: rgba(255, 231, 226, 0.12) !important; }
+    .bg-error\/10 { background-color: rgba(255, 180, 171, 0.1) !important; }
+    .bg-error\/12 { background-color: rgba(255, 180, 171, 0.12) !important; }
+    .border-primary\/20 { border-color: rgba(195, 245, 255, 0.2) !important; }
+    .border-secondary\/20 { border-color: rgba(255, 207, 143, 0.2) !important; }
+    .border-error\/20 { border-color: rgba(255, 180, 171, 0.2) !important; }
+    .bg-surface-variant\/10 { background-color: rgba(46, 54, 56, 0.1) !important; }
+    .bg-surface-variant\/20 { background-color: rgba(46, 54, 56, 0.2) !important; }
+    .bg-surface-container-high\/50 { background-color: rgba(36, 43, 45, 0.5) !important; }
+    .bg-surface-container-high\/30 { background-color: rgba(36, 43, 45, 0.3) !important; }
+    .bg-surface-container-high\/20 { background-color: rgba(36, 43, 45, 0.2) !important; }
+    .bg-surface-container-low\/60 { background-color: rgba(21, 29, 30, 0.6) !important; }
+    .border-outline-variant\/30 { border-color: rgba(59, 73, 76, 0.6) !important; }
+    .text-on-surface-variant\/60 { color: rgba(186, 201, 204, 0.6) !important; }
+    .text-on-surface-variant\/40 { color: rgba(186, 201, 204, 0.4) !important; }
+    .shadow-primary\/20 { box-shadow: 0 4px 14px rgba(195, 245, 255, 0.2) !important; }
 
-    /* Elevation system — a soft, layered shadow used on every major card so
-       surfaces read as physically raised off the page instead of flat boxes
-       with only a border. */
+    /* Elevation system */
     .shadow-card {
         box-shadow:
             0 1px 1px rgba(0, 0, 0, 0.3),
@@ -67,8 +65,7 @@ BODY_HTML = r"""
             inset 0 1px 0 rgba(255, 255, 255, 0.02) !important;
     }
 
-    /* Icon chip — the small rounded, tinted icon badge used consistently in
-       every section/card header and stat tile across the dashboard */
+    /* Icon chip */
     .icon-chip {
         width: 34px;
         height: 34px;
@@ -82,16 +79,6 @@ BODY_HTML = r"""
         font-size: 18px !important;
     }
 
-    /* Layout and Spacing helper classes. NOTE: tailwind.min.css below is a
-       static file generated once against an earlier version of this UI's
-       source — it is NOT re-compiled against these templates, so it only
-       contains whichever utility classes that earlier source happened to
-       use. Any class used here that wasn't in that original source (e.g.
-       most spacing utilities, "/opacity" variants, "border-x", and any
-       arbitrary bracket value like "h-[480px]") silently has NO effect.
-       Every such class actually needed by this file must be hand-defined
-       here explicitly — that's why this list is longer than it looks like
-       it should need to be. */
     .gap-gutter { gap: 16px !important; }
     .gap-md { gap: 16px !important; }
     .p-lg { padding: 24px !important; }
@@ -107,7 +94,7 @@ BODY_HTML = r"""
     .mb-md { margin-bottom: 16px !important; }
     .mt-xl { margin-top: 32px !important; }
     .mt-lg { margin-top: 24px !important; }
-    .w-sidebar-width { width: 280px !important; }
+    .w-sidebar-width { width: 260px !important; }
     .space-y-gutter > * + * { margin-top: 20px !important; }
     .space-y-md > * + * { margin-top: 16px !important; }
     .border-x {
@@ -117,22 +104,21 @@ BODY_HTML = r"""
         border-right-style: solid !important;
     }
 
-    /* Typography custom styles matching tailwind-config fontSize */
-    .font-headline-sm { font-family: 'Inter', sans-serif !important; font-weight: 600 !important; }
+    /* Typography custom styles matching tailwind-config fontSize & fontFamily */
+    .font-headline-sm { font-family: 'Hanken Grotesk', 'Inter', sans-serif !important; font-weight: 600 !important; }
     .text-headline-sm { font-size: 18px !important; line-height: 1.4 !important; }
-    .font-headline-lg { font-family: 'Inter', sans-serif !important; font-weight: 600 !important; }
+    .font-headline-lg { font-family: 'Hanken Grotesk', 'Inter', sans-serif !important; font-weight: 600 !important; }
     .text-headline-lg { font-size: 24px !important; line-height: 1.3 !important; }
-    .font-headline-xl { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; }
+    .font-headline-xl { font-family: 'Hanken Grotesk', 'Inter', sans-serif !important; font-weight: 700 !important; }
     .text-headline-xl { font-size: 36px !important; line-height: 1.2 !important; letter-spacing: -0.02em !important; }
-    .font-body-sm { font-family: 'Inter', sans-serif !important; font-weight: 400 !important; }
+    .font-body-sm { font-family: 'Hanken Grotesk', 'Inter', sans-serif !important; font-weight: 400 !important; }
     .text-body-sm { font-size: 12px !important; line-height: 1.5 !important; }
-    .font-body-md { font-family: 'Inter', sans-serif !important; font-weight: 400 !important; }
+    .font-body-md { font-family: 'Hanken Grotesk', 'Inter', sans-serif !important; font-weight: 400 !important; }
     .text-body-md { font-size: 14px !important; line-height: 1.6 !important; }
     .font-label-mono { font-family: 'JetBrains Mono', monospace !important; font-weight: 500 !important; }
     .text-label-mono { font-size: 12px !important; line-height: 1 !important; letter-spacing: 0.05em !important; }
-    .font-label-caps { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; }
+    .font-label-caps { font-family: 'JetBrains Mono', monospace !important; font-weight: 700 !important; }
     .text-label-caps { font-size: 11px !important; line-height: 1 !important; letter-spacing: 0.1em !important; text-transform: uppercase !important; }
-
 
     /* Material Symbols font settings */
     .material-symbols-outlined {
@@ -141,37 +127,150 @@ BODY_HTML = r"""
         vertical-align: middle;
     }
 
-    /* Global page resets. The app background is a flat color plus two very
-       soft radial glows (brand cyan top-left, success green top-right) for
-       a sense of depth instead of a single flat dark rectangle — the glows
-       are subtle by design, not a visible "feature". */
+    /* Global page resets */
     html, body, [data-testid="stHeader"] {
-        font-family: 'Inter', sans-serif !important;
-        background-color: #0a0d0f !important;
-        color: #eef2f3 !important;
+        font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+        background-color: #0d1516 !important;
+        color: #dce4e5 !important;
     }
     [data-testid="stAppViewContainer"] {
-        font-family: 'Inter', sans-serif !important;
-        color: #eef2f3 !important;
-        background:
-            radial-gradient(1100px 550px at 15% -8%, rgba(76, 215, 246, 0.05), transparent 60%),
-            radial-gradient(900px 500px at 100% -5%, rgba(78, 222, 163, 0.035), transparent 55%),
-            #0a0d0f !important;
+        font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+        color: #dce4e5 !important;
+        background: #0d1516 !important;
     }
 
-    /* Hide Streamlit top header */
-    [data-testid="stHeader"] {
-        display: none !important;
+    /* Redesigned Streamlit Sidebar */
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined' !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        display: inline-block !important;
+        line-height: 1 !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        word-wrap: normal !important;
+        white-space: nowrap !important;
+        direction: ltr !important;
+        -webkit-font-smoothing: antialiased !important;
     }
-    /* Hide the collapse button inside the sidebar to prevent closing it */
-    [data-testid="stSidebarCollapseButton"] {
-        display: none !important;
+
+    [data-testid="stSidebar"] {
+        background-color: #151d1e !important;
+        border-right: 1px solid #3b494c !important;
+        width: 270px !important;
+        min-width: 270px !important;
+    }
+    [data-testid="stSidebar"] > div:first-child,
+    [data-testid="stSidebarContent"] {
+        background-color: #151d1e !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100vh !important;
+        padding: 1.25rem 0.75rem !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Pure CSS Flexbox Sequencing: Brand (1), Nav (10), Footer (999) */
+    [data-testid="stSidebarUserContent"] {
+        display: contents !important;
+        order: 1 !important;
+    }
+    [data-testid="stSidebarUserContent"] > div,
+    [data-testid="stSidebarUserContent"] [data-testid="stVerticalBlock"] {
+        display: contents !important;
+    }
+
+    /* 1. Brand Top: Order 1 */
+    [data-testid="stSidebarContent"] [data-testid="stElementContainer"]:has(.sidebar-brand-top),
+    [data-testid="stSidebarUserContent"] [data-testid="stElementContainer"]:has(.sidebar-brand-top),
+    div:has(> div > .sidebar-brand-top),
+    div:has(> .sidebar-brand-top),
+    .sidebar-brand-top {
+        order: 1 !important;
+        width: 100% !important;
+    }
+
+    /* 2. Navigation Tabs Container: Order 10 */
+    [data-testid="stSidebarNav"],
+    [data-testid="stSidebarContent"] > div:first-child,
+    [data-testid="stSidebarContent"] > div:has([data-testid="stSidebarNav"]) {
+        order: 10 !important;
+        width: 100% !important;
+        padding: 0 4px !important;
+        margin-top: 8px !important;
+        margin-bottom: auto !important;
+    }
+    [data-testid="stSidebarNav"] ul {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important; /* Spaced out tabs */
+        padding: 12px 0 !important;
+        margin: 0 !important;
+    }
+    [data-testid="stSidebarNav"] li {
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+    }
+    [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebarNavLink"] {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        padding: 12px 16px !important; /* Generous tab padding */
+        color: #bac9cc !important;
+        font-family: 'Hanken Grotesk', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        border-radius: 8px !important;
+        border-left: 4px solid transparent !important;
+        background-color: transparent !important;
+        text-decoration: none !important;
+        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease !important;
+    }
+    [data-testid="stSidebarNav"] a:hover,
+    [data-testid="stSidebarNavLink"]:hover {
+        color: #dce4e5 !important;
+        background-color: #2e3638 !important;
+    }
+    [data-testid="stSidebarNav"] a:active,
+    [data-testid="stSidebarNavLink"]:active {
+        transform: scale(0.98) !important;
+    }
+    /* Active State styling */
+    [data-testid="stSidebarNav"] a[aria-current="page"],
+    [data-testid="stSidebarNav"] a[data-testid="stSidebarNavLinkActive"],
+    [data-testid="stSidebarNav"] a:has([aria-current="page"]) {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        border-left: 4px solid #c3f5ff !important;
+        color: #c3f5ff !important;
+        font-weight: 700 !important;
+    }
+    [data-testid="stSidebarNav"] a[aria-current="page"] span,
+    [data-testid="stSidebarNav"] a[data-testid="stSidebarNavLinkActive"] span,
+    [data-testid="stSidebarNav"] a:has([aria-current="page"]) span {
+        color: #c3f5ff !important;
+        font-weight: 700 !important;
+    }
+    [data-testid="stSidebarNav"] span {
+        font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+    }
+
+    [data-testid="stSidebarContent"] [data-testid="stElementContainer"]:has(.sidebar-footer-bottom),
+    [data-testid="stSidebarUserContent"] [data-testid="stElementContainer"]:has(.sidebar-footer-bottom),
+    div:has(> div > .sidebar-footer-bottom),
+    .sidebar-footer-bottom {
+        order: 999 !important;
+        margin-top: auto !important;
+        width: 100% !important;
     }
 
     /* Set maximum width of the app container */
     [data-testid="stAppViewBlockContainer"] {
-        padding: 16px 20px !important;
-        max-width: 1360px !important;
+        padding: 16px 24px !important;
+        max-width: 100% !important;
     }
 
     /* Streamlit's default gap between stacked widgets (~1rem) compounds fast
@@ -194,14 +293,14 @@ BODY_HTML = r"""
         gap: 4px !important;
     }
     [data-testid="stTabs"] button[data-baseweb="tab"] {
-        padding: 8px 14px !important;
+        padding: 8px 12px !important;
         height: auto !important;
     }
     [data-testid="stTabs"] [data-testid="stVerticalBlock"] {
         gap: 0.5rem !important;
     }
     [data-testid="stTabsPanel"] {
-        padding-top: 12px !important;
+        padding-top: 10px !important;
     }
 
     /* Expander: tighter body padding */
@@ -209,14 +308,35 @@ BODY_HTML = r"""
         padding-top: 6px !important;
     }
 
-    /* Style Streamlit Sidebar (kept in case it's ever used again) */
-    [data-testid="stSidebar"] {
-        background-color: #101416 !important;
-        border-right: 1px solid #263134 !important;
-        padding-top: 16px !important;
+    /* Sidebar Radio Navigation styling */
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div {
+        gap: 8px !important;
     }
-    [data-testid="stSidebarUserContent"] {
-        padding-top: 0 !important;
+    [data-testid="stSidebar"] [data-testid="stRadio"] label {
+        background-color: #161c1e !important;
+        border: 1px solid #263134 !important;
+        border-radius: 10px !important;
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #eef2f3 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease-in-out !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+        background-color: #212a2d !important;
+        border-color: #4cd7f6 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] label[data-checked="true"],
+    [data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) {
+        background-color: rgba(76, 215, 246, 0.18) !important;
+        border-color: #4cd7f6 !important;
+        color: #4cd7f6 !important;
+        font-weight: 700 !important;
+        box-shadow: 0 0 10px rgba(76, 215, 246, 0.2) !important;
     }
 
     /* Widget labels app-wide */

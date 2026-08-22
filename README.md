@@ -33,8 +33,7 @@ A single AI detector alone is unreliable: strict enough to avoid false alarms an
 accidents; loose enough to catch them and it fires on ordinary traffic. So every flagged frame goes
 through two stages before anything is dispatched:
 
-1. **Fast, always-on detector** ([DETR, fine-tuned for traffic accidents by Hilman Taris
-   Muttaqin](https://huggingface.co/hilmantm/detr-traffic-accident-detection)) — scans every video
+1. **Fast, always-on detector** ([fine-tuned traffic accident detection model](https://huggingface.co/dri11heaD/accident-detection-model)) — scans every video
    frame in real time, flags anything that could plausibly be an accident. Deliberately sensitive,
    so it rarely misses a genuine incident.
 2. **Careful, on-demand verifier (`qwen2.5vl:3b`, run fully locally via Ollama)** — looks at any

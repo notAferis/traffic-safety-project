@@ -31,7 +31,7 @@ load_dotenv()
 import os
 
 # ---------------------------------------------------------------------------
-# Verifier Model Factory — supports Qwen2.5-VL (Local/Ollama) & Gemini 2.5 Flash (Cloud)
+# Verifier Model Factory — supports Qwen2.5-VL (Local/Ollama) & all Gemini Models (Cloud)
 # ---------------------------------------------------------------------------
 def get_verifier(verifier_model: str = "qwen"):
     model_choice_lower = (verifier_model or "").lower()
@@ -39,17 +39,39 @@ def get_verifier(verifier_model: str = "qwen"):
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or os.getenv("API_KEY")
         if not api_key:
             raise ValueError("GEMINI_API_KEY / GOOGLE_API_KEY environment variable is missing in .env")
+
+        # Restricted to active authorized models: gemini-3.7-flash & gemini-3.5-flash
+        if "3.5" in model_choice_lower:
+            target_model = "gemini-3.5-flash"
+        else:
+            target_model = "gemini-3.7-flash"
+
         from langchain_google_genai import ChatGoogleGenerativeAI
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
+            model=target_model,
             temperature=0,
             google_api_key=api_key,
         )
         return llm.with_structured_output(IncidentVerdict)
+    elif any(k in model_choice_lower for k in ["gpt", "openai", "chatgpt"]):
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is missing in .env")
+
+        # Restricted to active authorized model: gpt-5.4-mini
+        target_model = "gpt-5.4-mini"
+
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(
+            model=target_model,
+            temperature=0,
+            api_key=api_key,
+        )
+        return llm.with_structured_output(IncidentVerdict)
     else:
-        # Default: local Qwen2.5-VL via Ollama
+        # Default: local Qwen3.5-VL via Ollama
         llm = ChatOllama(
-            model="qwen2.5vl:3b",
+            model="qwen3.5:4b",
             temperature=0,
             top_k=1,
             seed=42,
@@ -71,7 +93,8 @@ def run_incident_response(
     contacts: list[str] = None,
     verification_confidence_threshold: float = 0.8,
     verifier_model: str = "qwen",
-) -> str:
+    return_details: bool = False,
+):
     """
     Feed an incident alert and optional image to the incident verifier, then dispatch
     SMS/voice reports directly in Python based on its structured verdict.
@@ -98,13 +121,27 @@ def run_incident_response(
         # Fail safe: an unparseable/invalid verdict must never fall through to a real dispatch.
         answer = f"FALSE POSITIVE: verifier output failed validation ({e})"
         print(answer)
+        if return_details:
+            return answer, {}, "VERIFIER_ERROR"
         return answer
 
     print(f"\nVerdict: {verdict}")
 
+    verdict_dict = {
+        "is_accident": verdict.is_accident,
+        "confidence_score": verdict.confidence_score,
+        "vehicles_involved": getattr(verdict, "vehicles_involved", ""),
+        "damage_and_hazards": getattr(verdict, "damage_and_hazards", ""),
+        "road_blockage_status": getattr(verdict, "road_blockage_status", ""),
+        "observations": getattr(verdict, "observations", ""),
+        "sms_report": getattr(verdict, "sms_report", ""),
+    }
+
     if not verdict.is_accident:
         answer = f"FALSE POSITIVE: {verdict.observations} (model verdict: not an accident)"
         print(answer)
+        if return_details:
+            return answer, verdict_dict, "FALSE_POSITIVE_NOT_ACCIDENT"
         return answer
 
     if verdict.confidence_score < verification_confidence_threshold:
@@ -114,13 +151,28 @@ def run_incident_response(
             f"{verification_confidence_threshold:.2f} dispatch threshold)"
         )
         print(answer)
+        if return_details:
+            return answer, verdict_dict, "FALSE_POSITIVE_LOW_CONFIDENCE"
         return answer
 
-    report_text = (
-        verdict.sms_report.strip()
-        if (hasattr(verdict, "sms_report") and verdict.sms_report and len(verdict.sms_report.strip()) > 5)
-        else verdict.observations
-    )
+    sms_rep = (getattr(verdict, "sms_report", "") or "").strip()
+    v_inv = (getattr(verdict, "vehicles_involved", "") or "").strip()
+    d_haz = (getattr(verdict, "damage_and_hazards", "") or "").strip()
+    r_blk = (getattr(verdict, "road_blockage_status", "") or "").strip()
+
+    if sms_rep and len(sms_rep) > 20:
+        report_text = sms_rep
+    elif v_inv or d_haz or r_blk:
+        parts = []
+        if v_inv:
+            parts.append(f"VEHICLES: {v_inv}")
+        if d_haz:
+            parts.append(f"DAMAGE/HAZARDS: {d_haz}")
+        if r_blk:
+            parts.append(f"ROAD: {r_blk}")
+        report_text = " | ".join(parts)
+    else:
+        report_text = verdict.observations
 
     send_incident_report(location, report_text, contacts=contacts)
     send_voice_incident_report(report_text, contacts=contacts)
@@ -130,5 +182,7 @@ def run_incident_response(
         f'Report: "{report_text}"'
     )
     print("\nAgent Response:\n", answer)
+    if return_details:
+        return answer, verdict_dict, "DISPATCH_OK"
     return answer
 

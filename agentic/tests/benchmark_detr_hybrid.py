@@ -135,8 +135,16 @@ def main():
 
     device = 0 if torch.cuda.is_available() else -1
     print(f"Loading DETR (device={'cuda' if device == 0 else 'cpu'}), threshold={confidence_thresh}...")
+    from transformers import AutoImageProcessor, AutoModelForObjectDetection
+    model_name = "dri11heaD/accident-detection-model"
+    model = AutoModelForObjectDetection.from_pretrained(model_name)
+    try:
+        image_processor = AutoImageProcessor.from_pretrained(model_name)
+    except Exception:
+        image_processor = AutoImageProcessor.from_pretrained("PekingU/rtdetr_r50vd")
+
     detector = hf_pipeline(
-        "object-detection", model="hilmantm/detr-traffic-accident-detection", device=device
+        "object-detection", model=model, image_processor=image_processor, device=device
     )
 
     items = sorted(CALIB_DIR.glob("*.jpg")) + sorted(CALIB_DIR.glob("*.png"))
